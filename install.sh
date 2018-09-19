@@ -715,12 +715,16 @@ build_from_travis()
 #==============================================================================
 build_all()
 {
+if [ ! -d "$BUILD_DIR/libbitcoin" ]; then
     build_from_tarball_boost $BOOST_URL $BOOST_ARCHIVE bzip2 . $PARALLEL "$BUILD_BOOST" "${BOOST_OPTIONS[@]}"
     build_from_tarball $ZMQ_URL $ZMQ_ARCHIVE gzip . $PARALLEL "$BUILD_ZMQ" "${ZMQ_OPTIONS[@]}" "$@"
     build_from_github libbitcoin secp256k1 version5 $PARALLEL ${SECP256K1_OPTIONS[@]} "$@"
-    build_from_github libbitcoin libbitcoin master $PARALLEL ${BITCOIN_OPTIONS[@]} "$@"
-    build_from_github libbitcoin libbitcoin-protocol master $PARALLEL ${BITCOIN_PROTOCOL_OPTIONS[@]} "$@"
-    build_from_travis libbitcoin libbitcoin-client master $PARALLEL ${BITCOIN_CLIENT_OPTIONS[@]} "$@"
+    build_from_github JasonCoombs libbitcoin master $PARALLEL ${BITCOIN_OPTIONS[@]} "$@"
+    build_from_github JasonCoombs libbitcoin-protocol master $PARALLEL ${BITCOIN_PROTOCOL_OPTIONS[@]} "$@"
+    build_from_travis JasonCoombs libbitcoin-client master $PARALLEL ${BITCOIN_CLIENT_OPTIONS[@]} "$@"
+else
+    build_from_local "local re-build" $PARALLEL ${BITCOIN_OPTIONS[@]} "$@"
+fi
 }
 
 
@@ -730,9 +734,11 @@ if [[ $DISPLAY_HELP ]]; then
     display_help
 else
     display_configuration
+if [ ! -d "$BUILD_DIR" ]; then
     create_directory "$BUILD_DIR"
     push_directory "$BUILD_DIR"
     initialize_git
     pop_directory
+fi
     time build_all "${CONFIGURE_OPTIONS[@]}"
 fi
