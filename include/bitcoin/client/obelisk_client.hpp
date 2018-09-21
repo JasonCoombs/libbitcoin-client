@@ -54,7 +54,7 @@ public:
 
     typedef std::function<void(const code&, uint16_t, size_t,
         const hash_digest&)> update_handler;
-    typedef std::function<void(const chain::block&)> block_update_handler;
+    typedef std::function<void( chain::block&)> block_update_handler;
     typedef std::function<void(const chain::transaction&)>
         transaction_update_handler;
 
